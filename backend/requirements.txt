@@ -1,0 +1,22 @@
+# Core dependencies
+requests==2.31.0
+python-dotenv==1.0.0
+pandas==2.1.4
+
+# Database
+supabase==2.3.4
+
+# API Framework (choose one when ready)
+# flask==3.0.0
+# fastapi==0.109.0
+# uvicorn==0.25.0
+
+# Data visualization (for AI insights)
+matplotlib==3.8.2
+plotly==5.18.0
+
+# Date/time handling
+python-dateutil==2.8.2
+
+# Testing
+pytest==7.4.3
