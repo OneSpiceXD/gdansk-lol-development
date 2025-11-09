@@ -1,0 +1,120 @@
+{
+  "events": [
+    {
+      "id": 1,
+      "type": "rank_up",
+      "player": "Wojtek",
+      "message": "climbed to Emerald this week - now #4 in Gdansk!",
+      "timestamp": "2h ago",
+      "icon": "trophy"
+    },
+    {
+      "id": 2,
+      "type": "win_streak",
+      "player": "Team Five Penguins",
+      "message": "won 8 games in a row!",
+      "timestamp": "3h ago",
+      "icon": "flame"
+    },
+    {
+      "id": 3,
+      "type": "improvement",
+      "message": "Gdansk average rank increased 2 divisions this month",
+      "timestamp": "5h ago",
+      "icon": "chart"
+    },
+    {
+      "id": 4,
+      "type": "achievement",
+      "player": "Anna",
+      "message": "reached Diamond for the first time!",
+      "timestamp": "6h ago",
+      "icon": "star"
+    },
+    {
+      "id": 5,
+      "type": "tournament",
+      "message": "Kinguin Monthly Open registrations now open - 1,000zl prize!",
+      "timestamp": "8h ago",
+      "icon": "trophy"
+    },
+    {
+      "id": 6,
+      "type": "win_streak",
+      "player": "Maciej",
+      "message": "won 12 games in a row on Sylas!",
+      "timestamp": "10h ago",
+      "icon": "flame"
+    },
+    {
+      "id": 7,
+      "type": "rank_up",
+      "player": "Kasia",
+      "message": "promoted to Diamond II!",
+      "timestamp": "12h ago",
+      "icon": "trophy"
+    },
+    {
+      "id": 8,
+      "type": "new_player",
+      "player": "Tomasz",
+      "message": "just joined the Gdansk hub!",
+      "timestamp": "14h ago",
+      "icon": "user"
+    },
+    {
+      "id": 9,
+      "type": "team_formed",
+      "player": "Team Mors Bears",
+      "message": "formed and looking for a support player!",
+      "timestamp": "16h ago",
+      "icon": "users"
+    },
+    {
+      "id": 10,
+      "type": "achievement",
+      "player": "Piotr",
+      "message": "achieved 70% win rate on Lee Sin over 20 games!",
+      "timestamp": "18h ago",
+      "icon": "star"
+    },
+    {
+      "id": 11,
+      "type": "milestone",
+      "message": "Gdansk hub reached 100 active players!",
+      "timestamp": "1d ago",
+      "icon": "party"
+    },
+    {
+      "id": 12,
+      "type": "rank_up",
+      "player": "Jakub",
+      "message": "climbed from Platinum to Emerald in one week!",
+      "timestamp": "1d ago",
+      "icon": "trophy"
+    },
+    {
+      "id": 13,
+      "type": "tournament",
+      "message": "Last month's Kinguin tournament winner: Team Five Penguins!",
+      "timestamp": "2d ago",
+      "icon": "trophy"
+    },
+    {
+      "id": 14,
+      "type": "improvement",
+      "player": "Ola",
+      "message": "improved KDA from 2.1 to 3.4 this month!",
+      "timestamp": "2d ago",
+      "icon": "chart"
+    },
+    {
+      "id": 15,
+      "type": "new_player",
+      "player": "Magdalena",
+      "message": "claimed their profile and joined the leaderboard!",
+      "timestamp": "3d ago",
+      "icon": "user"
+    }
+  ]
+}

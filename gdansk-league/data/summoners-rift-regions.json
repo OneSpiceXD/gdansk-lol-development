@@ -1,0 +1,54 @@
+{
+  "topLane": {
+    "path": "M 40 60 L 120 40 L 200 60 L 180 120 L 100 140 L 60 100 Z",
+    "centroid": { "x": 120, "y": 90 }
+  },
+  "midLane": {
+    "path": "M 100 140 L 180 120 L 280 220 L 300 300 L 220 320 L 120 220 Z",
+    "centroid": { "x": 200, "y": 220 }
+  },
+  "botLane": {
+    "path": "M 240 320 L 320 300 L 360 340 L 340 380 L 280 360 L 220 320 Z",
+    "centroid": { "x": 290, "y": 340 }
+  },
+  "blueJungleTop": {
+    "path": "M 60 100 L 100 140 L 120 220 L 80 240 L 40 200 L 40 120 Z",
+    "centroid": { "x": 75, "y": 170 }
+  },
+  "blueJungleBot": {
+    "path": "M 80 240 L 120 220 L 180 260 L 180 320 L 140 340 L 80 300 Z",
+    "centroid": { "x": 130, "y": 280 }
+  },
+  "redJungleTop": {
+    "path": "M 180 120 L 220 100 L 280 100 L 320 140 L 280 220 L 220 180 Z",
+    "centroid": { "x": 250, "y": 145 }
+  },
+  "redJungleBot": {
+    "path": "M 220 180 L 280 220 L 320 260 L 320 320 L 260 340 L 220 320 Z",
+    "centroid": { "x": 270, "y": 270 }
+  },
+  "riverUpper": {
+    "path": "M 120 220 L 180 120 L 220 100 L 220 180 L 180 260 L 120 220 Z",
+    "centroid": { "x": 170, "y": 180 }
+  },
+  "riverLower": {
+    "path": "M 180 260 L 220 180 L 280 220 L 260 340 L 180 320 L 180 260 Z",
+    "centroid": { "x": 230, "y": 260 }
+  },
+  "baronPit": {
+    "path": "M 160 80 L 210 70 L 230 90 L 220 120 L 170 125 L 155 100 Z",
+    "centroid": { "x": 190, "y": 98 }
+  },
+  "dragonPit": {
+    "path": "M 180 315 L 210 325 L 235 345 L 210 365 L 170 360 L 165 335 Z",
+    "centroid": { "x": 195, "y": 342 }
+  },
+  "blueBase": {
+    "path": "M 20 320 L 60 300 L 80 340 L 60 380 L 20 380 Z",
+    "centroid": { "x": 48, "y": 345 }
+  },
+  "redBase": {
+    "path": "M 320 20 L 360 60 L 380 80 L 380 40 L 340 20 Z",
+    "centroid": { "x": 355, "y": 48 }
+  }
+}
