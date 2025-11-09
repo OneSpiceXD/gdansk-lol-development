@@ -74,21 +74,65 @@ def _make_request(url: str, headers: Dict[str, str], max_retries: int = 3) -> Op
     return None
 
 
+def get_account_by_riot_id(game_name: str, tag_line: str) -> Optional[Dict]:
+    """
+    Fetch account information by Riot ID (new API)
+
+    Args:
+        game_name: Riot ID game name (e.g., "petRoXD")
+        tag_line: Riot ID tag line (e.g., "EUW")
+
+    Returns:
+        Dictionary containing account info (puuid, gameName, tagLine)
+    """
+    url = f"https://{CONTINENT}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{game_name}/{tag_line}"
+    headers = {"X-Riot-Token": API_KEY}
+
+    print(f"Fetching account data for: {game_name}#{tag_line}")
+    return _make_request(url, headers)
+
+
 def get_summoner_by_name(summoner_name: str) -> Optional[Dict]:
     """
     Fetch summoner information by summoner name
+    Note: This endpoint is deprecated, prefer using get_account_by_riot_id + get_summoner_by_puuid
 
     Args:
-        summoner_name: In-game summoner name
+        summoner_name: In-game summoner name (or "gameName#tagLine" format)
 
     Returns:
         Dictionary containing summoner info (id, accountId, puuid, name, profileIconId, summonerLevel)
     """
-    url = f"https://{REGION}.api.riotgames.com/lol/summoner/v4/summoners/by-name/{summoner_name}"
-    headers = {"X-Riot-Token": API_KEY}
+    # Check if summoner_name is in Riot ID format (gameName#tagLine)
+    if '#' in summoner_name:
+        parts = summoner_name.split('#')
+        game_name = parts[0]
+        tag_line = parts[1] if len(parts) > 1 else 'EUW'
 
-    print(f"Fetching summoner data for: {summoner_name}")
-    return _make_request(url, headers)
+        # Use new ACCOUNT-V1 API
+        account = get_account_by_riot_id(game_name, tag_line)
+        if not account:
+            print(f"Account not found for {game_name}#{tag_line}")
+            return None
+
+        print(f"Account found! PUUID: {account['puuid'][:20]}...")
+
+        # Get summoner info using PUUID
+        summoner = get_summoner_by_puuid(account['puuid'])
+        if not summoner:
+            print(f"Summoner not found for PUUID: {account['puuid'][:20]}...")
+            return None
+
+        print(f"DEBUG - Summoner data keys: {list(summoner.keys())}")
+        print(f"DEBUG - Full summoner response: {summoner}")
+        return summoner
+    else:
+        # Legacy endpoint (may not work for all accounts)
+        url = f"https://{REGION}.api.riotgames.com/lol/summoner/v4/summoners/by-name/{summoner_name}"
+        headers = {"X-Riot-Token": API_KEY}
+
+        print(f"Fetching summoner data for: {summoner_name}")
+        return _make_request(url, headers)
 
 
 def get_summoner_by_puuid(puuid: str) -> Optional[Dict]:
@@ -104,12 +148,31 @@ def get_summoner_by_puuid(puuid: str) -> Optional[Dict]:
     url = f"https://{REGION}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/{puuid}"
     headers = {"X-Riot-Token": API_KEY}
 
+    print(f"Fetching summoner info for PUUID: {puuid[:20]}...")
+    return _make_request(url, headers)
+
+
+def get_ranked_stats_by_puuid(puuid: str) -> Optional[List[Dict]]:
+    """
+    Fetch ranked statistics by PUUID (new method)
+
+    Args:
+        puuid: Player Universal Unique Identifier
+
+    Returns:
+        List of ranked queue entries (RANKED_SOLO_5x5, RANKED_FLEX_SR, etc.)
+        Each entry contains: tier, rank, leaguePoints, wins, losses
+    """
+    url = f"https://{REGION}.api.riotgames.com/lol/league/v4/entries/by-puuid/{puuid}"
+    headers = {"X-Riot-Token": API_KEY}
+
+    print(f"Fetching ranked stats for PUUID: {puuid[:20]}...")
     return _make_request(url, headers)
 
 
 def get_ranked_stats(summoner_id: str) -> Optional[List[Dict]]:
     """
-    Fetch ranked statistics for a summoner
+    Fetch ranked statistics for a summoner (legacy method)
 
     Args:
         summoner_id: Encrypted summoner ID
@@ -181,7 +244,7 @@ def get_player_full_data(summoner_name: str) -> Optional[Dict]:
     Convenience function that combines multiple API calls
 
     Args:
-        summoner_name: In-game summoner name
+        summoner_name: In-game summoner name (or gameName#tagLine format)
 
     Returns:
         Dictionary containing all player data or None if player not found
@@ -192,8 +255,13 @@ def get_player_full_data(summoner_name: str) -> Optional[Dict]:
         print(f"Summoner not found: {summoner_name}")
         return None
 
-    # Get ranked stats
-    ranked_stats = get_ranked_stats(summoner['id'])
+    # Get ranked stats using PUUID (new API)
+    puuid = summoner.get('puuid')
+    if not puuid:
+        print(f"No PUUID found for summoner")
+        return None
+
+    ranked_stats = get_ranked_stats_by_puuid(puuid)
 
     # Find Ranked Solo/Duo queue stats
     solo_queue = None
@@ -203,13 +271,21 @@ def get_player_full_data(summoner_name: str) -> Optional[Dict]:
                 solo_queue = queue
                 break
 
+    # Extract summoner name (from Riot ID if available, or from ranked stats)
+    if '#' in summoner_name:
+        display_name = summoner_name.split('#')[0]
+    elif solo_queue and 'summonerName' in solo_queue:
+        display_name = solo_queue['summonerName']
+    else:
+        display_name = summoner_name
+
     # Compile full player data
     player_data = {
-        'summoner_name': summoner['name'],
+        'summoner_name': display_name,
         'puuid': summoner['puuid'],
-        'summoner_id': summoner['id'],
-        'summoner_level': summoner['summonerLevel'],
-        'profile_icon_id': summoner['profileIconId'],
+        'summoner_id': solo_queue.get('summonerId', '') if solo_queue else '',  # Get ID from ranked stats
+        'summoner_level': summoner.get('summonerLevel', 0),
+        'profile_icon_id': summoner.get('profileIconId', 0),
         'tier': solo_queue.get('tier') if solo_queue else 'UNRANKED',
         'rank': solo_queue.get('rank') if solo_queue else '',
         'lp': solo_queue.get('leaguePoints', 0) if solo_queue else 0,
@@ -218,7 +294,7 @@ def get_player_full_data(summoner_name: str) -> Optional[Dict]:
         'winrate': round(solo_queue.get('wins', 0) / (solo_queue.get('wins', 0) + solo_queue.get('losses', 1)) * 100, 1) if solo_queue else 0.0
     }
 
-    print(f"✓ Successfully fetched data for {summoner_name}: {player_data['tier']} {player_data['rank']} ({player_data['lp']} LP)")
+    print(f"[OK] Successfully fetched data for {display_name}: {player_data['tier']} {player_data['rank']} ({player_data['lp']} LP)")
     return player_data
 
 
