@@ -1,0 +1,17 @@
+# Gdansk LoL Project - Player Names
+# Add summoner names here (one per line)
+# Lines starting with # are comments and will be ignored
+
+# Instructions:
+# 1. Add player names from Gdansk/Poland region
+# 2. Check "League of Legends Gdańsk" Facebook group (500+ members)
+# 3. Search op.gg for EUNE region high-ranked players
+# 4. Contact Gdańsk University esports club
+# 5. Ask Kinguin Lounge for player lists
+
+# Example format (remove # to activate):
+# PlayerName1
+# PlayerName2
+# PlayerName3
+
+# Start adding your player names below:
