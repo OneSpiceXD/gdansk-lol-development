@@ -227,7 +227,7 @@ export default function CompactMetricCard({
               <div className="flex items-center justify-between text-xs mb-1">
                 <div className="flex items-center gap-1.5">
                   <img
-                    src={`/ranks/${rankLabel?.toUpperCase()}.png`}
+                    src={`/ranks/${rankLabel?.toLowerCase()}.png`}
                     alt={rankLabel}
                     className="w-3.5 h-3.5"
                   />
@@ -297,7 +297,7 @@ export default function CompactMetricCard({
                     <div className="text-sm text-gray-400 mb-1">Performs at</div>
                     <div className="flex items-center gap-2">
                       <img
-                        src={`/ranks/${playerPlacement}.png`}
+                        src={`/ranks/${playerPlacement.toLowerCase()}.png`}
                         alt={playerPlacement}
                         className="w-8 h-8"
                       />
@@ -335,7 +335,7 @@ export default function CompactMetricCard({
                     {/* Rank Icon */}
                     <div className="w-7 h-7 flex-shrink-0">
                       <img
-                        src={`/ranks/${rank}.png`}
+                        src={`/ranks/${rank.toLowerCase()}.png`}
                         alt={rank}
                         className={`w-full h-full ${isAboveThisRank ? 'opacity-100' : 'opacity-40'}`}
                       />

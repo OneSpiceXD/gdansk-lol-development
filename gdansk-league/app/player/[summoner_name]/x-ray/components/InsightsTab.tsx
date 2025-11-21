@@ -633,7 +633,7 @@ export default function InsightsTab({ summonerName, defaultRole }: InsightsTabPr
               <div className="p-4 bg-[#151b28] rounded-lg">
                 <div className="flex items-center gap-3">
                   <img
-                    src={`/ranks/${playerRank}.png`}
+                    src={`/ranks/${playerRank?.toLowerCase()}.png`}
                     alt={rankLabel}
                     className="w-12 h-12"
                   />
