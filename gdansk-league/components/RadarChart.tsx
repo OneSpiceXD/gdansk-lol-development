@@ -66,7 +66,7 @@ export default function RadarChart({ data, server, className = '' }: RadarChartP
     const iconY = Math.sin(angle) * distance
 
     // Determine text anchor based on position
-    let textAnchor = 'middle'
+    let textAnchor: 'start' | 'middle' | 'end' = 'middle'
     if (iconX > 5) textAnchor = 'start'
     else if (iconX < -5) textAnchor = 'end'
 
