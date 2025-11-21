@@ -396,7 +396,7 @@ export default function FocusPlanSidebar({
                   </div>
                   <div className="flex items-center gap-2">
                     <img
-                      src={`/ranks/${suggestedDuo.tier}.png`}
+                      src={`/ranks/${suggestedDuo.tier.toLowerCase()}.png`}
                       alt={suggestedDuo.tier}
                       className="w-5 h-5"
                     />
@@ -670,7 +670,7 @@ export default function FocusPlanSidebar({
                   </div>
                   <div className="flex items-center gap-1.5">
                     <img
-                      src={`/ranks/${shadow.tier}.png`}
+                      src={`/ranks/${shadow.tier.toLowerCase()}.png`}
                       alt={shadow.tier}
                       className="w-4 h-4"
                     />
@@ -795,7 +795,7 @@ export default function FocusPlanSidebar({
                 </div>
                 <div className="flex items-center gap-1.5">
                   <img
-                    src={`/ranks/${suggestedDuo.tier}.png`}
+                    src={`/ranks/${suggestedDuo.tier.toLowerCase()}.png`}
                     alt={suggestedDuo.tier}
                     className="w-4 h-4"
                   />
