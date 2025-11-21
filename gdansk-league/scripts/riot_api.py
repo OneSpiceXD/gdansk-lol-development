@@ -17,7 +17,7 @@ API_KEY = os.getenv('RIOT_API_KEY')
 if not API_KEY:
     raise ValueError("RIOT_API_KEY not found in environment variables. Please add it to .env file.")
 
-REGION = "eun1"  # Europe Nordic & East (Poland server)
+REGION = "euw1"  # Europe West (changed from eun1 to support EUW players)
 CONTINENT = "europe"  # For match history and other continental endpoints
 
 # Rate limiting configuration
@@ -188,7 +188,7 @@ def get_ranked_stats(summoner_id: str) -> Optional[List[Dict]]:
     return _make_request(url, headers)
 
 
-def get_match_history(puuid: str, count: int = 20, queue_type: int = 420) -> Optional[List[str]]:
+def get_match_history(puuid: str, count: int = 20, queue_type: int = 420, start_time: Optional[int] = None) -> Optional[List[str]]:
     """
     Fetch match IDs for a player's match history
 
@@ -196,6 +196,7 @@ def get_match_history(puuid: str, count: int = 20, queue_type: int = 420) -> Opt
         puuid: Player Universal Unique Identifier
         count: Number of matches to fetch (max 100)
         queue_type: Queue ID (420 = Ranked Solo/Duo, 440 = Ranked Flex)
+        start_time: Unix timestamp (in seconds) for start of time range
 
     Returns:
         List of match IDs
@@ -206,6 +207,9 @@ def get_match_history(puuid: str, count: int = 20, queue_type: int = 420) -> Opt
         "queue": queue_type,
         "count": count
     }
+
+    if start_time:
+        params["startTime"] = start_time
 
     print(f"Fetching {count} match IDs for PUUID: {puuid[:8]}...")
     try:
@@ -236,6 +240,96 @@ def get_match_details(match_id: str) -> Optional[Dict]:
 
     print(f"Fetching match details for: {match_id}")
     return _make_request(url, headers)
+
+
+def get_champion_mastery(puuid: str, count: int = 3) -> Optional[List[Dict]]:
+    """
+    Fetch top champion mastery data for a player
+
+    Args:
+        puuid: Player Universal Unique Identifier
+        count: Number of top champions to fetch (default 3)
+
+    Returns:
+        List of champion mastery entries sorted by mastery points
+        Each entry contains: championId, championLevel, championPoints, etc.
+    """
+    url = f"https://{REGION}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-puuid/{puuid}/top"
+    headers = {"X-Riot-Token": API_KEY}
+    params = {"count": count}
+
+    print(f"Fetching top {count} champion masteries for PUUID: {puuid[:20]}...")
+    try:
+        time.sleep(RATE_LIMIT_DELAY)
+        response = requests.get(url, headers=headers, params=params, timeout=10)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            print(f"Failed to fetch champion mastery: {response.status_code}")
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching champion mastery: {str(e)}")
+        return None
+
+
+def get_champion_stats_from_matches(puuid: str, match_count: int = 20, start_time: Optional[int] = None) -> Dict[int, Dict]:
+    """
+    Calculate champion statistics from recent matches (games played, wins, losses)
+    This gives SEASONAL data based on recent matches
+
+    Args:
+        puuid: Player Universal Unique Identifier
+        match_count: Number of recent matches to analyze
+        start_time: Unix timestamp (in seconds) for start of time range (e.g., season start)
+
+    Returns:
+        Dictionary mapping champion_id to stats: {games, wins, losses, last_played}
+    """
+    match_ids = get_match_history(puuid, count=match_count, queue_type=420, start_time=start_time)
+    if not match_ids:
+        return {}
+
+    champion_stats = {}
+
+    for match_id in match_ids:
+        match_data = get_match_details(match_id)
+        if not match_data:
+            continue
+
+        # Find player's data in the match
+        participants = match_data.get('info', {}).get('participants', [])
+        player_data = None
+        for participant in participants:
+            if participant.get('puuid') == puuid:
+                player_data = participant
+                break
+
+        if not player_data:
+            continue
+
+        champion_id = player_data.get('championId')
+        won = player_data.get('win', False)
+        game_end_timestamp = match_data.get('info', {}).get('gameEndTimestamp', 0)
+
+        if champion_id not in champion_stats:
+            champion_stats[champion_id] = {
+                'games': 0,
+                'wins': 0,
+                'losses': 0,
+                'last_played': game_end_timestamp
+            }
+
+        champion_stats[champion_id]['games'] += 1
+        if won:
+            champion_stats[champion_id]['wins'] += 1
+        else:
+            champion_stats[champion_id]['losses'] += 1
+
+        # Update last played if more recent
+        if game_end_timestamp > champion_stats[champion_id]['last_played']:
+            champion_stats[champion_id]['last_played'] = game_end_timestamp
+
+    return champion_stats
 
 
 def get_player_full_data(summoner_name: str) -> Optional[Dict]:

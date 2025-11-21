@@ -245,7 +245,7 @@ if __name__ == "__main__":
     client = RiotAPI()
 
     # Replace with your own Riot ID
-    game_name = "petRoXD"
+    game_name = "rhalenessach"
     tag_line = "EUW"
 
     print(f"Testing Riot API with Riot ID: {game_name}#{tag_line}")

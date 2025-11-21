@@ -41,6 +41,15 @@ const config: Config = {
           lighter: '#1E2139',
         },
       },
+      keyframes: {
+        shimmer: {
+          '0%': { backgroundPosition: '200% center' },
+          '100%': { backgroundPosition: '-200% center' },
+        },
+      },
+      animation: {
+        shimmer: 'shimmer 3s linear infinite',
+      },
     },
   },
   plugins: [],
