@@ -459,10 +459,13 @@ export default function InsightsTab({ summonerName, defaultRole }: InsightsTabPr
     )
   }
 
-  // Calculate X-RAY Score
-  const rawScore = calculateXRayScore(validMetrics)
+  // Calculate X-RAY Score - filter to metrics with valid percentile
+  const metricsWithPercentile = validMetrics
+    .filter(m => m.percentile !== undefined)
+    .map(m => ({ ...m, percentile: m.percentile as number }))
+  const rawScore = calculateXRayScore(metricsWithPercentile)
   const xrayScore = Math.round((rawScore / 1200) * 1000)
-  const overallPercentile = getOverallPercentile(validMetrics)
+  const overallPercentile = getOverallPercentile(metricsWithPercentile)
 
   // Find weak metrics (below average)
   const weakMetrics = validMetrics
