@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.SUPABASE_URL!
-const supabaseKey = process.env.SUPABASE_ANON_KEY!
-const supabase = createClient(supabaseUrl, supabaseKey)
+const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 
 const CURRENT_SEASON = 'S3_2025'
 
@@ -15,6 +14,11 @@ interface RouteParams {
 
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
+    if (!supabaseUrl || !supabaseKey) {
+      return NextResponse.json({ error: 'Database not configured' }, { status: 500 })
+    }
+    const db = createClient(supabaseUrl, supabaseKey)
+
     const { summoner_name } = await params
     const decodedName = decodeURIComponent(summoner_name)
 
@@ -24,7 +28,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const limit = parseInt(searchParams.get('limit') || '3')
 
     // Fetch player
-    const { data: player, error: playerError } = await supabase
+    const { data: player, error: playerError } = await db
       .from('players')
       .select('id')
       .eq('summoner_name', decodedName)
@@ -35,7 +39,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     }
 
     // Fetch top champions for this season
-    const { data: championStats, error: statsError } = await supabase
+    const { data: championStats, error: statsError } = await db
       .from('player_champion_stats')
       .select(`
         champion_id,

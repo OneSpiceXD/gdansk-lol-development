@@ -6,10 +6,14 @@ export async function GET(
   { params }: { params: Promise<{ summoner_name: string }> }
 ) {
   try {
+    if (!supabase) {
+      return NextResponse.json({ error: 'Database not configured' }, { status: 500 })
+    }
+    const db = supabase
     const { summoner_name } = await params
 
     // Get player
-    const { data: player, error: playerError } = await supabase
+    const { data: player, error: playerError } = await db
       .from('players')
       .select('puuid, tier, rank, summoner_name')
       .eq('summoner_name', summoner_name)
@@ -20,7 +24,7 @@ export async function GET(
     }
 
     // Get shadow recommendations for this player
-    const { data: shadows, error: shadowsError } = await supabase
+    const { data: shadows, error: shadowsError } = await db
       .from('shadow_recommendations')
       .select('*')
       .eq('user_puuid', player.puuid)
@@ -44,7 +48,7 @@ export async function GET(
     // Enrich shadow data with player information
     const enrichedShadows = await Promise.all(
       shadows.map(async (shadow) => {
-        const { data: shadowPlayer } = await supabase
+        const { data: shadowPlayer } = await db
           .from('players')
           .select('summoner_name, tier, rank, profile_icon_id')
           .eq('puuid', shadow.shadow_puuid)

@@ -8,10 +8,14 @@ export async function GET(
   { params }: { params: Promise<{ summoner_name: string }> }
 ) {
   try {
+    if (!supabase) {
+      return NextResponse.json({ error: 'Database not configured' }, { status: 500 })
+    }
+    const db = supabase
     const { summoner_name } = await params
 
     // First get the player's PUUID from database
-    const { data: player, error: playerError } = await supabase
+    const { data: player, error: playerError } = await db
       .from('players')
       .select('puuid')
       .eq('summoner_name', summoner_name)

@@ -5,8 +5,15 @@ const CURRENT_SEASON = 'S3_2025'
 
 export async function GET() {
   try {
+    if (!supabase) {
+      return NextResponse.json({ error: 'Database not configured' }, { status: 500 })
+    }
+
+    // Use local reference after null check
+    const db = supabase
+
     // Fetch players
-    const { data: players, error } = await supabase
+    const { data: players, error } = await db
       .from('players')
       .select('*')
 
@@ -33,7 +40,7 @@ export async function GET() {
     const playersWithTrend = await Promise.all(
       (players || []).map(async (player) => {
         // Get LP history
-        const { data: historyData } = await supabase
+        const { data: historyData } = await db
           .from('player_history')
           .select('lp, recorded_at')
           .eq('player_id', player.id)
@@ -45,7 +52,7 @@ export async function GET() {
         const lpChange7d = historyData ? player.lp - historyData.lp : null
 
         // Get top 3 champions for current season
-        const { data: seasonalChampions } = await supabase
+        const { data: seasonalChampions } = await db
           .from('player_champion_stats')
           .select(`
             champion_id,

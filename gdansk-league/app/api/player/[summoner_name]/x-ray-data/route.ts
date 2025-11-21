@@ -6,6 +6,11 @@ export async function GET(
   { params }: { params: Promise<{ summoner_name: string }> }
 ) {
   try {
+    if (!supabase) {
+      return NextResponse.json({ error: 'Database not configured' }, { status: 500 })
+    }
+    const db = supabase
+
     const { summoner_name } = await params
     const { searchParams } = new URL(request.url)
     const games = parseInt(searchParams.get('games') || '20')
@@ -13,7 +18,7 @@ export async function GET(
     const sideFilter = searchParams.get('side') || null // Optional side filter (blue/red)
 
     // Get player by summoner name
-    const { data: player, error: playerError } = await supabase
+    const { data: player, error: playerError } = await db
       .from('players')
       .select('puuid, id')
       .eq('summoner_name', summoner_name)
@@ -24,7 +29,7 @@ export async function GET(
     }
 
     // Get match analytics summary for the player (Ranked Solo/Duo only)
-    const { data: analytics, error: analyticsError } = await supabase
+    const { data: analytics, error: analyticsError } = await db
       .from('match_analytics_summary')
       .select('*')
       .eq('player_puuid', player.puuid)
@@ -53,7 +58,7 @@ export async function GET(
     let filteredMatchIds = analytics.map(a => a.match_id)
 
     if (roleFilter || sideFilter) {
-      let query = supabase
+      let query = db
         .from('match_stats')
         .select('match_id')
         .eq('player_id', player.id)
@@ -91,7 +96,7 @@ export async function GET(
     // Get match_stats to include role information
     const matchStatsMap: Record<string, any> = {}
     if (filteredAnalytics.length > 0) {
-      const { data: matchStats } = await supabase
+      const { data: matchStats } = await db
         .from('match_stats')
         .select('match_id, role')
         .eq('player_id', player.id)
